@@ -13,15 +13,16 @@ function search() {
   fetch('allscripts.txt')
     .then(response => response.text())
     .then(gameData => {
-      // Search logic
+      // Search logic for relevant lines containing the query
       const foundData = gameData.split('\n').filter(line => line.toLowerCase().includes(query));
-
+      
       if (foundData.length > 0) {
-        currentData = foundData.join('\n');  // Save the raw search results
-        formattedData = formatReadable(currentData); // Format the data for normal users
+        // Combine all relevant results
+        currentData = foundData.join('\n');
+        formattedData = formatReadable(currentData); // Format for display
 
         resultsDiv.innerHTML = `<pre>${currentData}</pre>`;
-        document.getElementById('view-buttons').style.display = 'block';  // Show the toggle buttons
+        document.getElementById('view-buttons').style.display = 'block';  // Show toggle buttons
       } else {
         resultsDiv.innerHTML = '<p>No results found.</p>';
       }
@@ -42,15 +43,42 @@ function showFormattedView() {
 
 // Function to convert code-like content into readable text
 function formatReadable(data) {
-  // Simplify and translate common patterns for normal players
-  return data
-    .replace(/ItemId/g, 'Item')
-    .replace(/Weight = ([\d.]+)/g, (_, weight) => `Drop Rate = ${(weight * 100).toFixed(2)}%`)
-    .replace(/return require.+?\}/g, 'Item Definition')  // Strips long require lines for simplicity
-    .replace(/rbxassetid:\/\/\d+/g, '[Asset ID]')  // Replaces asset IDs with a generic label
-    .replace(/local/g, 'Variable')
-    .replace(/function/g, 'Function')
-    .replace(/\s*--.+/g, '')  // Remove comments for clarity
-    .replace(/\{(.+)\}/g, '[$1]') // Format Lua-like tables as readable lists
-    .replace(/\[\]/g, 'Empty List');
+  const lines = data.split('\n').filter(line => !line.startsWith('--')); // Exclude metadata lines
+
+  let formatted = '';
+
+  // Add readable content
+  for (const line of lines) {
+    if (line.includes('new')) {
+      formatted += '### Crop Definition\n';
+    } else if (line.includes('ItemId')) {
+      const [itemId, category] = extractItemData(line);
+      formatted += `- **Item**: ${itemId}, **Category**: ${category}\n`;
+    } else if (line.includes('Weight')) {
+      const weightMatch = line.match(/Weight = ([\d.]+)/);
+      if (weightMatch) {
+        formatted += `- **Drop Rate**: ${(weightMatch[1] * 100).toFixed(2)}%\n`;
+      }
+    } else if (line.includes('SellPrice')) {
+      const sellPriceMatch = line.match(/SellPrice = (\d+)/);
+      if (sellPriceMatch) {
+        formatted += `- **Sell Price**: ${sellPriceMatch[1]} coins\n`;
+      }
+    } else {
+      formatted += line + '\n'; // Add any other relevant line
+    }
+  }
+
+  return formatted;
+}
+
+// Helper function to extract item information
+function extractItemData(line) {
+  const itemIdMatch = line.match(/ItemId = "(.+?)";/);
+  const categoryMatch = line.match(/Catagory = "(.+?)";/);
+  
+  const itemId = itemIdMatch ? itemIdMatch[1] : 'Unknown Item';
+  const category = categoryMatch ? categoryMatch[1] : 'Unknown Category';
+  
+  return [itemId, category];
 }
