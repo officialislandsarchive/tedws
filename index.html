@@ -9,21 +9,33 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      background-color: #f4f4f4;
+      background-color: #1e1e2d;
+      color: #fff;
     }
-    #results {
-      margin-top: 20px;
-      white-space: pre-wrap;
-      background-color: #fff;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    h1 {
+      text-align: center;
+      color: #ffbf00;
+    }
+    #container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #292942;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    #search-bar-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
     }
     input {
       padding: 10px;
       width: 300px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      margin-right: 10px;
+      background-color: #fff;
     }
     button {
       padding: 10px;
@@ -36,12 +48,50 @@
     button:hover {
       background-color: #0056b3;
     }
+    #view-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .toggle-button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      background-color: #ffbf00;
+      border: none;
+      border-radius: 5px;
+      color: #292942;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle-button:hover {
+      background-color: #ffdb4d;
+    }
+    #results {
+      white-space: pre-wrap;
+      background-color: #1e1e2d;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      color: #fff;
+      font-family: monospace;
+      max-height: 400px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
-  <h1>Search Game Data</h1>
-  <input type="text" id="search-bar" placeholder="Type a command or keyword..." />
-  <button onclick="search()">Search</button>
-  <div id="results"></div>
+  <div id="container">
+    <h1>Search Game Data</h1>
+    <div id="search-bar-container">
+      <input type="text" id="search-bar" placeholder="Type a command or keyword..." />
+      <button onclick="search()">Search</button>
+    </div>
+
+    <div id="view-buttons" style="display:none;">
+      <button class="toggle-button" onclick="showCodeView()">Show Code View</button>
+      <button class="toggle-button" onclick="showFormattedView()">Show Formatted View</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
 </body>
 </html>
